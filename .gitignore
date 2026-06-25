@@ -1,0 +1,13 @@
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Python / backend
+backend/.venv/
+__pycache__/
+*.pyc
+
+# Editor / OS
+.DS_Store
+Thumbs.db
