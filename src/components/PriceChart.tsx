@@ -7,9 +7,11 @@ interface Props {
   color: string
   loading: boolean
   error: string | null
+  // 默认只展示末尾这么多个点（用于「时」尺度默认停在最近 3 个交易日）；不传则展示全部
+  defaultTailCount?: number
 }
 
-export function PriceChart({ items, color, loading, error }: Props) {
+export function PriceChart({ items, color, loading, error, defaultTailCount }: Props) {
   const elRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<echarts.ECharts | null>(null)
 
@@ -40,6 +42,12 @@ export function PriceChart({ items, color, loading, error }: Props) {
     const dates = items.map((d) => d.date)
     const closes = items.map((d) => d.close)
 
+    // 默认缩放窗口：末尾若干点（如最近 3 个交易日），进度条仍可拖到全部数据
+    let zoomStart = 0
+    if (defaultTailCount && defaultTailCount > 0 && defaultTailCount < items.length) {
+      zoomStart = ((items.length - defaultTailCount) / items.length) * 100
+    }
+
     chart.setOption(
       {
         grid: { left: 56, right: 24, top: 24, bottom: 64 },
@@ -61,8 +69,8 @@ export function PriceChart({ items, color, loading, error }: Props) {
           axisLabel: { color: '#666' },
         },
         dataZoom: [
-          { type: 'inside', start: 0, end: 100 },
-          { type: 'slider', start: 0, end: 100, height: 18, bottom: 24 },
+          { type: 'inside', start: zoomStart, end: 100 },
+          { type: 'slider', start: zoomStart, end: 100, height: 18, bottom: 24 },
         ],
         series: [
           {
@@ -84,7 +92,7 @@ export function PriceChart({ items, color, loading, error }: Props) {
       },
       { notMerge: true },
     )
-  }, [items, color])
+  }, [items, color, defaultTailCount])
 
   return (
     <div className="chart-wrap">

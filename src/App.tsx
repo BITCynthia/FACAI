@@ -58,6 +58,14 @@ export default function App() {
     return { last, diff, pct, up: diff >= 0 }
   }, [items])
 
+  // 「时」尺度默认只展示最近 3 个交易日（数据本身含约 1 个月，进度条可拖到全部）
+  const defaultTailCount = useMemo(() => {
+    if (scale !== 'hour' || items.length === 0) return undefined
+    const days = Array.from(new Set(items.map((d) => d.date.slice(0, 10)))).sort()
+    const last3 = new Set(days.slice(-3))
+    return items.filter((d) => last3.has(d.date.slice(0, 10))).length
+  }, [scale, items])
+
   const fav = code ? wl.isFavorite(code) : false
 
   // 选股时同步已知名称（来自搜索建议或自选列表）
@@ -123,7 +131,7 @@ export default function App() {
           </div>
         </div>
 
-        <PriceChart items={items} color={color} loading={loading} error={error} />
+        <PriceChart items={items} color={color} loading={loading} error={error} defaultTailCount={defaultTailCount} />
       </main>
     </div>
   )

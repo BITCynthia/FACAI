@@ -40,7 +40,7 @@ def _retry(fn: Callable[[], _T]) -> _T:
 
 # 各尺度默认回溯窗口（天）。None 表示尽可能取全。
 _WINDOW_DAYS: dict[str, int | None] = {
-    "hour": 30,      # 分钟级数据本身回溯有限
+    "hour": 31,      # 约 1 个月（前端默认只展示最近 3 个交易日，进度条可拖到全月）
     "day": 730,      # 约 2 年
     "week": 1825,    # 约 5 年
     "month": None,   # 取全
